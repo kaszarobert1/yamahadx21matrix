@@ -36,7 +36,7 @@ bool ROWS[12];
 int COLS[12] = {28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50};
 int BUTTON1COLS[4] = {3, 4, 5, 6};
 
-int BUTTON2COLS[7] = {23, 25, 27, 29, 31, 33,35};
+int BUTTON2COLS[7] = {23, 25, 27, 29, 31, 33, 35};
 String NOTENAME[14] = { "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H", "C", "CISZ"};
 uint64_t  PioC;
 
@@ -46,11 +46,11 @@ void setup() {
   {
     note[i] = false;
   }
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 64; i++)
   {
     button1[i] = false;
   }
-  for (int i = 0; i < 12; i++)
+  for (int i = 0; i < 64; i++)
   {
     button2[i] = false;
   }
@@ -154,36 +154,34 @@ void button2scanner() {
     //i bus low level
     digitalWrite(BUTTON2COLS[i], LOW);
 
-if (!digitalRead(49))
-        {
-          if (!button2[i]) {
-            kiir("BUTTO2__ON :",String(i) );
-            MIDI3.sendNoteOn(tune, 127, 1);
-            button2[i] = true;
-          }
-        } else {
-          if (button2[i]) {
-            kiir("BUTTO2__OFF:", String(i));
-            button2[i] = false;
-          }
-        }
+    if (!digitalRead(49))
+    {
+      if (!button2[i]) {
+        kiir("BUTTO2__ON :", String(i) );
+     
+        button2[i] = true;
+      }
+    } else {
+      if (button2[i]) {
+        kiir("BUTTO2__OFF:", String(i));
+        button2[i] = false;
+      }
+    }
+
+    if (!digitalRead(51))
+    {
+      if (!button2[i + 7]) {
+        kiir("BUTTO2__ON :", String(i + 7) );       
+        button2[i + 7] = true;
+      }
+    } else {
+      if (button2[i + 7]) {
+        kiir("BUTTO2__OFF:", String(i + 7));
+        button2[i + 7] = false;
+      }
+    }
 
 
-  if (!digitalRead(51))
-        {
-          if (!button2[i+7]) {
-            kiir("BUTTO2__ON :",String(i+7) );
-            MIDI3.sendNoteOn(tune, 127, 1);
-            button2[i+7] = true;
-          }
-        } else {
-          if (button2[i+7]) {
-            kiir("BUTTO2__OFF:", String(i+7));
-            button2[i+7] = false;
-          }
-        }
-
-   
   }
 }
 
@@ -198,22 +196,22 @@ void button1scanner() {
 
     //i bus low level
     digitalWrite(BUTTON1COLS[i], LOW);
-    
-        if (!digitalRead(13))
-        {
-          if (!button1[i]) {
-            kiir("BUTTON__ON :",String(i) );
-            MIDI3.sendNoteOn(tune, 127, 1);
-            button1[i] = true;
-          }
-        } else {
-          if (button1[i]) {
-            kiir("BUTTON__OFF:", String(i));
-            button1[i] = false;
-          }
-        }
 
-    
+    if (!digitalRead(13))
+    {
+      if (!button1[i]) {
+        kiir("BUTTON__ON :", String(i) );
+        MIDI3.sendNoteOn(tune, 127, 1);
+        button1[i] = true;
+      }
+    } else {
+      if (button1[i]) {
+        kiir("BUTTON__OFF:", String(i));
+        button1[i] = false;
+      }
+    }
+
+
     if (!digitalRead(12))
     {
       if (!button1[i + 8]) {
@@ -225,7 +223,7 @@ void button1scanner() {
     } else {
       if (button1[i + 8]) {
 
-       kiir("BUTTON__OFF:", String(i + 8) );
+        kiir("BUTTON__OFF:", String(i + 8) );
 
         button1[i + 8] = false;
       }
@@ -248,10 +246,10 @@ void button1scanner() {
     }
 
 
- if (!digitalRead(10))
+    if (!digitalRead(10))
     {
       if (!button1[i + 24]) {
-       kiir("BUTTON__ON :", String(i + 24)  );
+        kiir("BUTTON__ON :", String(i + 24)  );
 
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 24] = true;
@@ -259,14 +257,14 @@ void button1scanner() {
     } else {
       if (button1[i + 24]) {
 
-        kiir("BUTTON__OFF:" ,String(i + 24)  );
+        kiir("BUTTON__OFF:" , String(i + 24)  );
 
         button1[i + 24] = false;
       }
     }
-   
 
-if (!digitalRead(9))
+
+    if (!digitalRead(9))
     {
       if (!button1[i + 32]) {
         kiir("BUTTON__ON: " , String(i + 32));
@@ -284,7 +282,7 @@ if (!digitalRead(9))
     }
 
 
- if (!digitalRead(8))
+    if (!digitalRead(8))
     {
       if (!button1[i + 40]) {
         kiir("BUTTON__ON: " , String(i + 40));
@@ -301,7 +299,7 @@ if (!digitalRead(9))
       }
     }
 
- if (!digitalRead(2))
+    if (!digitalRead(2))
     {
       if (!button1[i + 48]) {
         kiir("BUTTON__ON: " , String(i + 48)  );
@@ -312,13 +310,13 @@ if (!digitalRead(9))
     } else {
       if (button1[i + 48]) {
 
-        kiir("BUTTON__OFF:" ,String(i + 48) );
+        kiir("BUTTON__OFF:" , String(i + 48) );
 
         button1[i + 48] = false;
       }
     }
- 
-   if (!digitalRead(7))
+
+    if (!digitalRead(7))
     {
       if (!button1[i + 56]) {
         kiir("BUTTON__ON: " , String(i + 56)  );
@@ -329,14 +327,14 @@ if (!digitalRead(9))
     } else {
       if (button1[i + 56]) {
 
-        kiir("BUTTON__OFF:" ,String(i + 56) );
+        kiir("BUTTON__OFF:" , String(i + 56) );
 
         button1[i + 56] = false;
       }
     }
 
-   
-   
+
+
   }
 }
 
