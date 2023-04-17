@@ -258,6 +258,7 @@ void programload(byte loadprog) {
   delay(200);
 }
 void  midisendsysex() {
+  //--------------MENU--------------------------
   if (menupages == 1)
   {
     programsave(0);
@@ -268,27 +269,23 @@ void  midisendsysex() {
   if (menupages == 16)
   {
     if (upperlower == 0) {
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 88, sendvalue, paritbit, 247};
       //eq1 bias
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(2, 88, sendvalue);
       lrowstring[menupages][upperlower] = "EQ1 LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 1) {
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 86, sendvalue, paritbit, 247};
       //eq1 f0
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(2, 86, sendvalue);
       lrowstring[menupages][upperlower] = "EQ1 F0=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 24, sendvalue, paritbit, 247};
       //eq2 bias
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(1, 24, sendvalue);
       lrowstring[menupages][upperlower] = "EQ2 LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 22, sendvalue, paritbit, 247};
       //eq2 f0
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(1, 22, sendvalue);
       lrowstring[menupages][upperlower] = "EQ2 F0=" + String(values[menupages][upperlower]);
     }
   }
@@ -297,20 +294,16 @@ void  midisendsysex() {
   if (menupages == 19)
   {
     if (upperlower == 0) {
-      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 71, sendvalue, paritbit, 247};
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(1, 71, sendvalue);
     }
     if (upperlower == 1) {
-      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 7, sendvalue, paritbit, 247};
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(2, 7, sendvalue);
     }
     if (upperlower == 2) {
-      byte  sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 7, sendvalue, paritbit, 247};
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(0, 7, sendvalue);
     }
     if (upperlower == 3) {
-      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 71, sendvalue, paritbit, 247};
-      MIDI3.sendSysEx(11, sysexArray, true);
+      midisysexsend(0, 71, sendvalue);
     }
 
     lrowstring[menupages][upperlower] = String(Waveform[values[menupages][upperlower]]);
@@ -445,11 +438,14 @@ void  midisendsysex() {
       lrowstring[menupages][upperlower] = "CH2 LEVEL=" + String(values[menupages][upperlower]);
     }
   }
-
-
-
-
 }
+
+void midisysexsend(byte local, byte controller, byte sysvalue) {
+  byte paritbit = 0 ;
+  byte  sysexArray[11] = {240, 65, 0, 20, 18, 0, local, controller, sysvalue, paritbit, 247};
+  MIDI3.sendSysEx(11, sysexArray, true);
+}
+
 void button2scanner() {
   //button2 scanner
   for (int i = 0; i < 6; i++)
