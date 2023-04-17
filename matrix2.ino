@@ -247,9 +247,9 @@ void programload(byte loadprog) {
     {
       menupages = i;
       upperlower = j;
-      if(menupages!=1){
-      values[i][j] = dueFlashStorage.read(kezdocim + j * 64 + i);
-      midisendsysex();
+      if (menupages != 1) {
+        values[i][j] = dueFlashStorage.read(kezdocim + j * 64 + i);
+        midisendsysex();
       }
     }
   }
@@ -258,40 +258,58 @@ void programload(byte loadprog) {
   delay(200);
 }
 void  midisendsysex() {
- if (menupages == 1)
+  if (menupages == 1)
   {
-   programsave(0); 
+    programsave(0);
   }
-  
+  byte sendvalue = values[menupages][upperlower];
+  byte paritbit = 0;
+  //eq
+  if (menupages == 16)
+  {
+    if (upperlower == 0) {
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 88, sendvalue, paritbit, 247};
+      //eq1 bias
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ1 LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 1) {
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 86, sendvalue, paritbit, 247};
+      //eq1 f0
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ1 F0=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 2) {
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 24, sendvalue, paritbit, 247};
+      //eq2 bias
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ2 LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 3) {
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 22, sendvalue, paritbit, 247};
+      //eq2 f0
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ2 F0=" + String(values[menupages][upperlower]);
+    }
+  }
+
   //waveform
   if (menupages == 19)
   {
     if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 71, sendvalue, paritbit, 247};
+      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 71, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
-
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 7, sendvalue, paritbit, 247};
+      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 7, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
-
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 7, sendvalue, paritbit, 247};
-
+      byte  sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 7, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 71, sendvalue, paritbit, 247};
-
+      byte   sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 71, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
     }
 
@@ -301,31 +319,19 @@ void  midisendsysex() {
   if (menupages == 23)
   {
     if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 64, sendvalue, paritbit, 247};
-
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 0, sendvalue, paritbit, 247};
-      Serial.print("egy");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 0, sendvalue, paritbit, 247};
-      Serial.print("ketto");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 64, sendvalue, paritbit, 247};
-      Serial.print("harom");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     String note = NOTENAME[values[menupages][upperlower] % 12];
@@ -333,120 +339,54 @@ void  midisendsysex() {
     lrowstring[menupages][upperlower] = note + octave;
   }
 
-  //eq
-  if (menupages == 16)
-  {
-    if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 88, sendvalue, paritbit, 247};
-      //eq1 bias
-      MIDI3.sendSysEx(11, sysexArray, true);
-      lrowstring[menupages][upperlower] = "EQ1 LEVEL=" + String(values[menupages][upperlower]);
-    }
-    if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 86, sendvalue, paritbit, 247};
-
-      //eq1 f0
-      MIDI3.sendSysEx(11, sysexArray, true);
-      lrowstring[menupages][upperlower] = "EQ1 F0=" + String(values[menupages][upperlower]);
-    }
-    if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 24, sendvalue, paritbit, 247};
-      //eq2 bias
-
-      MIDI3.sendSysEx(11, sysexArray, true);
-      lrowstring[menupages][upperlower] = "EQ2 LEVEL=" + String(values[menupages][upperlower]);
-    }
-    if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
-      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 22, sendvalue, paritbit, 247};
-
-      //eq2 f0
-      MIDI3.sendSysEx(11, sysexArray, true);
-      lrowstring[menupages][upperlower] = "EQ2 F0=" + String(values[menupages][upperlower]);
-    }
-
-  }
-
   //eq-q ch freq
   if (menupages == 20)
   {
     if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 87, sendvalue, paritbit, 247};
       //eq1 Q
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "EQ1 Q=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 23, sendvalue, paritbit, 247};
-
       //eq2 Q
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "EQ2 Q=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 107, sendvalue, paritbit, 247};
       //CH1FREQ
-
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "CH1 FREQ=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 43, sendvalue, paritbit, 247};
-
       //CH2FREQ
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "CH2 FREQ=" + String(values[menupages][upperlower]);
     }
-
   }
-
 
   //fine
   if (menupages == 27)
   {
     if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 65, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 1, sendvalue, paritbit, 247};
-      Serial.print("egy");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 1, sendvalue, paritbit, 247};
-      Serial.print("ketto");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 65, sendvalue, paritbit, 247};
-      Serial.print("harom");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
-
     lrowstring[menupages][upperlower] = String(values[menupages][upperlower]);
   }
 
@@ -457,31 +397,19 @@ void  midisendsysex() {
       values[menupages][upperlower] = 0;
     }
     if (upperlower == 0) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 66, sendvalue, paritbit, 247};
-
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 2, sendvalue, paritbit, 247};
-      Serial.print("egy");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 2, sendvalue, paritbit, 247};
-      Serial.print("ketto");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 66, sendvalue, paritbit, 247};
-      Serial.print("harom");
       MIDI3.sendSysEx(11, sysexArray, true);
     }
     lrowstring[menupages][upperlower] = Keyfollow[values[menupages][upperlower]];
@@ -493,35 +421,26 @@ void  midisendsysex() {
       if (values[menupages][upperlower] > 32) {
         values[menupages][upperlower] = 0;
       }
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       //reverb alg
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 3, 30, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = Reverbstrings[values[menupages][upperlower]];
     }
     if (upperlower == 1) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       //reverb level
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 3, 31, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "REV LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       //chorusLevelLeft
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 108, sendvalue, paritbit, 247};
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "CH1 LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-      byte sendvalue = values[menupages][upperlower];
-      byte paritbit = 0;
       //chorusLevelRight
       byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 44, sendvalue, paritbit, 247};
-      Serial.print("harom");
       MIDI3.sendSysEx(11, sysexArray, true);
       lrowstring[menupages][upperlower] = "CH2 LEVEL=" + String(values[menupages][upperlower]);
     }
