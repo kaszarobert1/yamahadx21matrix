@@ -3,22 +3,23 @@
   keyboard matrix input (6db):
   br re or ye gr bl
   37 39 41 43 45 47
+
   keyboard matrix output(12db):
   br re or ye gr bl pr gr wh gg sb pn
   28 30 32 34 36 38 40 42 44 46 48 50
 
-  button matrix 1 output
+  button matrix 1 input
   wh gg sb pk
   3  4  5  6
-  button matrix 1 input
+  button matrix 1 output
   br re or ye gr bl gr vi!!!
   13 12 11 10 9  8  7  2!
 
-  button matrix 2 input?
+  button matrix 2 input
   br re or ye gr bl
   25 27 29 31 33 35
 
-  button matrix 2 output?
+  button matrix 2 output
   vi gy
   49 51
 */
@@ -27,19 +28,40 @@
 //#include <MIDIUSB.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+#include <DueFlashStorage.h>
+DueFlashStorage dueFlashStorage;
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial3, MIDI3);
 bool note[128];
 bool button1[64];
 bool button2[64];
+int menu = 0;
 int lastmenu = 0;
+int menupages = 0;
+int lastmenupages = 0;
+
+byte oldvalues[128][4];
+byte values[128][4];
+int kiirvalue = 0;
+String lrowstring[64][4];
+String lastlrowstring;
 int tune = 13;
 bool ROWS[12];
 int COLS[12] = {28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50};
 int BUTTON1COLS[4] = {3, 4, 5, 6};
-
 int BUTTON2COLS[7] = {25, 27, 29, 31, 33, 35};
 String NOTENAME[14] = { "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H", "C", "CISZ"};
 uint64_t  PioC;
+long elozoido = 0;
+long mostido = 0;
+byte upperlower = 0;
+String upperlowerstring[4] = {"L1: ", "L2: ", "U1: ", "U2: "};
+
+//menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
+//            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
+String menustring[64] = {"NO SET", "NO SET", "NO SET", "LOWER1", "NO", "NO", "NO", "LOWER2", "NO", "NO", "NO", "UPPER1", "NO", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "NO", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
+String Waveform[128] = {"marimba", "vibraphone", "xilophone1", "xilophone2", "logbass", "hammer", "japanesedrum", "kalimba", "pluck1", "chink", "agogo", "triangle", "bells", "pick", "lowpiano", "pianosample", "highpiano", "hapsichord", "harp", "organpercus", "steelstrings", "nylonstrings", "electgitar1", "electgitar2", "dirtygitar", "pickbass", "popbass", "thump", "klarinet", "breath", "popbass", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "violins", "pidzicart", "drawbarsloop", "highorganloop", "loworganloop", "electpiano1loop", "electpiano2loop", "claviloop", "hapsichordloop", "electbassloop1", "acusticbassloop", "electbassloop2", "electbassloop3", "electgitarloop", "chelloloop", "violinloop", "reedloop", "saxloop1", "saxloop2", "aahloop", "oohloop", "maleloop", "spectrum1loop", ""};
+String Reverbstrings[32] = {"Small Hall", "Medium Hall", "Large Hall", "Chapel", "SmallHall", "Box", "SmallMetalRoom", "Small Room", "Room", "Medium Room", "Md Large Room", "Large Room", "Large Room", "SingleDelay102ms", "CrossDelay180ms", "Cross Delay 148-256msec", "Short Gate (200ms)", "", "", "", ""};
+String Keyfollow[17] = {"-1", "-1/2", "-1/4", "Fixed", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "NORMAL", "5/4", "3/2", "2", "s1", "s2"};
 
 void setup() {
 
@@ -124,7 +146,7 @@ void setup() {
 
   delay(800);
   lcd.setCursor(0, 1);
-  lcd.print("  DigitalSynth  ");
+  lcd.print("D50 Sampler Fir ");
   delay(400);
   lcd.setCursor(0, 0);
   lcd.print(" Yamaha DX-21.1 ");
@@ -132,14 +154,383 @@ void setup() {
   lcd.print("                ");
   delay(800);
   lcd.setCursor(0, 0);
+  programload(0);
 }
 
 void loop() {
   keyboardscanner();
   button1scanner();
   button2scanner();
+  long mostido = millis();
+  if (mostido - elozoido > 100) {
+    elozoido = mostido;
+    if (button2[7] == true) {
+      if (values[menupages][upperlower] < 100)
+      {
+
+        values[menupages][upperlower]++;
+      } else {
+
+        values[menupages][upperlower] = 0;
+      }
+    }
+  }
+  if (values[menupages][upperlower] != oldvalues[menupages][upperlower]) {
+    midisendsysex();
+    oldvalues[menupages][upperlower] = values[menupages][upperlower];
+  }
+
+
+  if (menu == 3) {
+    upperlower = 0;
+  }
+  if (menu == 7) {
+    upperlower = 1;
+  }
+  if (menu == 11) {
+    upperlower = 2;
+  }
+  if (menu == 15) {
+    upperlower = 3;
+  }
+
+
+
+  if (menu != lastmenu) {
+    if (menu != 3 && menu != 7 && menu != 11 && menu != 15)
+    {
+      menupages = menu;
+      kiir0("        ", "        ");
+      kiir0(upperlowerstring[upperlower], menustring[menupages]);
+      lastmenu = menu;
+    } else
+    {
+      kiir0("        ", "        ");
+      kiir0(upperlowerstring[upperlower], menustring[menupages]);
+      lastmenu = menu;
+    }
+  }
+
+  if (lrowstring[menupages][upperlower] != lastlrowstring) {
+    kiir("        ", "        ");
+    kiir("", lrowstring[menupages][upperlower]);
+    lastlrowstring = lrowstring[menupages][upperlower];
+
+  }
+
 }
 
+
+void programsave(byte saveprog) {
+  //saveprog
+  int kezdocim = saveprog * 256;
+  for (int i = 0; i < 64; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      menupages = i;
+      upperlower = j;
+      dueFlashStorage.write(kezdocim + j * 64 + i, values[i][j]);
+    }
+  }
+  kiir("        ", "        ");
+  kiir("SAVE: ", String(saveprog));
+  delay(500);
+}
+
+
+void programload(byte loadprog) {
+  int kezdocim = loadprog * 256;
+  for (int i = 0; i < 64; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      menupages = i;
+      upperlower = j;
+      if(menupages!=1){
+      values[i][j] = dueFlashStorage.read(kezdocim + j * 64 + i);
+      midisendsysex();
+      }
+    }
+  }
+  kiir("        ", "        ");
+  kiir("LOAD: ", String(loadprog));
+  delay(200);
+}
+void  midisendsysex() {
+ if (menupages == 1)
+  {
+   programsave(0); 
+  }
+  
+  //waveform
+  if (menupages == 19)
+  {
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 71, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 7, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 7, sendvalue, paritbit, 247};
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 71, sendvalue, paritbit, 247};
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+
+    lrowstring[menupages][upperlower] = String(Waveform[values[menupages][upperlower]]);
+  }
+  //course
+  if (menupages == 23)
+  {
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 64, sendvalue, paritbit, 247};
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 0, sendvalue, paritbit, 247};
+      Serial.print("egy");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 0, sendvalue, paritbit, 247};
+      Serial.print("ketto");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 64, sendvalue, paritbit, 247};
+      Serial.print("harom");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    String note = NOTENAME[values[menupages][upperlower] % 12];
+    String octave = String(values[menupages][upperlower] / 12);
+    lrowstring[menupages][upperlower] = note + octave;
+  }
+
+  //eq
+  if (menupages == 16)
+  {
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 88, sendvalue, paritbit, 247};
+      //eq1 bias
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ1 LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 86, sendvalue, paritbit, 247};
+
+      //eq1 f0
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ1 F0=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 24, sendvalue, paritbit, 247};
+      //eq2 bias
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ2 LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 22, sendvalue, paritbit, 247};
+
+      //eq2 f0
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ2 F0=" + String(values[menupages][upperlower]);
+    }
+
+  }
+
+  //eq-q ch freq
+  if (menupages == 20)
+  {
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 87, sendvalue, paritbit, 247};
+      //eq1 Q
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ1 Q=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 23, sendvalue, paritbit, 247};
+
+      //eq2 Q
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "EQ2 Q=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 107, sendvalue, paritbit, 247};
+      //CH1FREQ
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "CH1 FREQ=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 43, sendvalue, paritbit, 247};
+
+      //CH2FREQ
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "CH2 FREQ=" + String(values[menupages][upperlower]);
+    }
+
+  }
+
+
+  //fine
+  if (menupages == 27)
+  {
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 65, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 1, sendvalue, paritbit, 247};
+      Serial.print("egy");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 1, sendvalue, paritbit, 247};
+      Serial.print("ketto");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 65, sendvalue, paritbit, 247};
+      Serial.print("harom");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+
+    lrowstring[menupages][upperlower] = String(values[menupages][upperlower]);
+  }
+
+  //keyfollow
+  if (menupages == 31)
+  {
+    if (values[menupages][upperlower] > 16) {
+      values[menupages][upperlower] = 0;
+    }
+    if (upperlower == 0) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 66, sendvalue, paritbit, 247};
+
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 2, sendvalue, paritbit, 247};
+      Serial.print("egy");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 2, sendvalue, paritbit, 247};
+      Serial.print("ketto");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 0, 66, sendvalue, paritbit, 247};
+      Serial.print("harom");
+      MIDI3.sendSysEx(11, sysexArray, true);
+    }
+    lrowstring[menupages][upperlower] = Keyfollow[values[menupages][upperlower]];
+  }
+
+  if (menupages == 28)
+  {
+    if (upperlower == 0) {
+      if (values[menupages][upperlower] > 32) {
+        values[menupages][upperlower] = 0;
+      }
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      //reverb alg
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 3, 30, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = Reverbstrings[values[menupages][upperlower]];
+    }
+    if (upperlower == 1) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      //reverb level
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 3, 31, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "REV LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 2) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      //chorusLevelLeft
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 2, 108, sendvalue, paritbit, 247};
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "CH1 LEVEL=" + String(values[menupages][upperlower]);
+    }
+    if (upperlower == 3) {
+      byte sendvalue = values[menupages][upperlower];
+      byte paritbit = 0;
+      //chorusLevelRight
+      byte sysexArray[11] = {240, 65, 0, 20, 18, 0, 1, 44, sendvalue, paritbit, 247};
+      Serial.print("harom");
+      MIDI3.sendSysEx(11, sysexArray, true);
+      lrowstring[menupages][upperlower] = "CH2 LEVEL=" + String(values[menupages][upperlower]);
+    }
+  }
+
+
+
+
+}
 void button2scanner() {
   //button2 scanner
   for (int i = 0; i < 6; i++)
@@ -158,13 +549,13 @@ void button2scanner() {
     if (!digitalRead(49))
     {
       if (!button2[i]) {
-        kiir("BUTTO2__ON :", String(i) );
+        // kiir("BUTTO2__ON :", String(i) );
 
         button2[i] = true;
       }
     } else {
       if (button2[i]) {
-        kiir("BUTTO2__OFF:", String(i));
+        // kiir("BUTTO2__OFF:", String(i));
         button2[i] = false;
       }
     }
@@ -172,12 +563,12 @@ void button2scanner() {
     if (!digitalRead(51))
     {
       if (!button2[i + 6]) {
-        kiir("BUTTO2__ON :", String(i + 6) );
+        //  kiir("BUTTO2__ON :", String(i + 6) );
         button2[i + 6] = true;
       }
     } else {
       if (button2[i + 6]) {
-        kiir("BUTTO2__OFF:", String(i + 6));
+        //  kiir("BUTTO2__OFF:", String(i + 6));
         button2[i + 6] = false;
       }
 
@@ -200,14 +591,14 @@ void button1scanner() {
     if (!digitalRead(13))
     {
       if (!button1[i]) {
-        kiir("BUTTON__ON :", String(i) );
-        MIDI3.sendNoteOn(tune, 127, 1);
-        lastmenu = i;
+        //  kiir("BUTTON__ON :", String(i) );
+        // MIDI3.sendNoteOn(tune, 127, 1);
+        menu = i;
         button1[i] = true;
       }
     } else {
       if (button1[i]) {
-        kiir("BUTTON__OFF:", String(i));
+        //kiir("BUTTON__OFF:", String(i));
         button1[i] = false;
       }
     }
@@ -216,15 +607,15 @@ void button1scanner() {
     if (!digitalRead(12))
     {
       if (!button1[i + 4]) {
-        kiir("BUTTON__ON :" , String(i + 4));
-        lastmenu = i + 4;
+        // kiir("BUTTON__ON :" , String(i + 4));
+        menu = i + 4;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 4] = true;
       }
     } else {
       if (button1[i + 4]) {
 
-        kiir("BUTTON__OFF:", String(i + 4) );
+        // kiir("BUTTON__OFF:", String(i + 4) );
 
         button1[i + 4] = false;
       }
@@ -232,15 +623,15 @@ void button1scanner() {
     if (!digitalRead(11))
     {
       if (!button1[i + 8]) {
-        kiir("BUTTON__ON :" , String(i + 8));
-        lastmenu = i + 8;
+        //   kiir("BUTTON__ON :" , String(i + 8));
+        menu = i + 8;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 8] = true;
       }
     } else {
       if (button1[i + 8]) {
 
-        kiir("BUTTON__OFF:" , String(i + 8));
+        // kiir("BUTTON__OFF:" , String(i + 8));
 
         button1[i + 8] = false;
       }
@@ -250,15 +641,15 @@ void button1scanner() {
     if (!digitalRead(10))
     {
       if (!button1[i + 12]) {
-        kiir("BUTTON__ON :", String(i + 12)  );
-        lastmenu = i + 12;
+        // kiir("BUTTON__ON :", String(i + 12)  );
+        menu = i + 12;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 12] = true;
       }
     } else {
       if (button1[i + 12]) {
 
-        kiir("BUTTON__OFF:" , String(i + 12)  );
+        // kiir("BUTTON__OFF:" , String(i + 12)  );
 
         button1[i + 12] = false;
       }
@@ -268,15 +659,15 @@ void button1scanner() {
     if (!digitalRead(9))
     {
       if (!button1[i + 16]) {
-        kiir("BUTTON__ON: " , String(i + 16));
-        lastmenu = i + 16;
+        // kiir("BUTTON__ON: " , String(i + 16));
+        menu = i + 16;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 16] = true;
       }
     } else {
       if (button1[i + 16]) {
 
-        kiir("BUTTON__OFF:" , String(i + 16));
+        // kiir("BUTTON__OFF:" , String(i + 16));
 
         button1[i + 16] = false;
       }
@@ -286,15 +677,15 @@ void button1scanner() {
     if (!digitalRead(8))
     {
       if (!button1[i + 20]) {
-        kiir("BUTTON__ON: " , String(i + 20));
-        lastmenu = i + 20;
+        //  kiir("BUTTON__ON: " , String(i + 20));
+        menu = i + 20;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 20] = true;
       }
     } else {
       if (button1[i + 20]) {
 
-        kiir("BUTTON__OFF:" , String(i + 20));
+        //   kiir("BUTTON__OFF:" , String(i + 20));
 
         button1[i + 20] = false;
       }
@@ -303,15 +694,15 @@ void button1scanner() {
     if (!digitalRead(2))
     {
       if (!button1[i + 24]) {
-        kiir("BUTTON__ON: " , String(i + 24)  );
-        lastmenu = i + 24;
+        // kiir("BUTTON__ON: " , String(i + 24)  );
+        menu = i + 24;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 24] = true;
       }
     } else {
       if (button1[i + 24]) {
 
-        kiir("BUTTON__OFF:" , String(i + 24) );
+        // kiir("BUTTON__OFF:" , String(i + 24) );
 
         button1[i + 24] = false;
       }
@@ -320,15 +711,15 @@ void button1scanner() {
     if (!digitalRead(7))
     {
       if (!button1[i + 28]) {
-        kiir("BUTTON__ON: " , String(i + 28)  );
-        lastmenu = i + 28;
+        //  kiir("BUTTON__ON: " , String(i + 28)  );
+        menu = i + 28;
         // MIDI3.sendNoteOn(tune, 127, 1);
         button1[i + 28] = true;
       }
     } else {
       if (button1[i + 28]) {
 
-        kiir("BUTTON__OFF:" , String(i + 28) );
+        // kiir("BUTTON__OFF:" , String(i + 28) );
 
         button1[i + 28] = false;
       }
@@ -365,14 +756,14 @@ void keyboardscanner() {
     if (!digitalRead(37)) //37. láb
     {
       if (!note[20 + i]) {
-        kiir(NOTENAME[i], "0 ON    ");
+        //   kiir(NOTENAME[i], "0 ON    ");
         //Serial.print(NOTENAME[i] + "0 ON    ");
         MIDI3.sendNoteOn (tune + i, 127, 1);
         note[20 + i] = true;
       }
     } else {
       if (note[20 + i]) {
-        kiir(NOTENAME[i], "0 OFF    ");
+        // kiir(NOTENAME[i], "0 OFF    ");
         //Serial.print(NOTENAME[i] + "0 OFF    ");
         MIDI3.sendNoteOff(tune + i, 0, 1);
         note[20 + i] = false;
@@ -382,13 +773,13 @@ void keyboardscanner() {
     if (!digitalRead(39)) //39. láb
     {
       if (!note[37 + i]) {
-        kiir(NOTENAME[i], "1 ON    ");
+        // kiir(NOTENAME[i], "1 ON    ");
         MIDI3.sendNoteOn(tune + 12 + i, 127, 1);
         note[37 + i] = true;
       }
     } else {
       if (note[37 + i]) {
-        kiir(NOTENAME[i], "1 OFF   ");
+        // kiir(NOTENAME[i], "1 OFF   ");
         MIDI3.sendNoteOff(tune + 12 + i, 0, 1);
         note[37 + i] = false;
       }
@@ -397,13 +788,13 @@ void keyboardscanner() {
     if (!digitalRead(41)) //41. láb
     {
       if (!note[49 + i]) {
-        kiir(NOTENAME[i], "2 ON    ");
+        //kiir(NOTENAME[i], "2 ON    ");
         MIDI3.sendNoteOn(tune + 24 + i, 127, 1);
         note[49 + i] = true;
       }
     } else {
       if (note[49 + i]) {
-        kiir(NOTENAME[i], "2 OFF   ");
+        //kiir(NOTENAME[i], "2 OFF   ");
         MIDI3.sendNoteOff(tune + 24 + i, 0, 1);
         note[49 + i] = false;
       }
@@ -413,13 +804,13 @@ void keyboardscanner() {
     if (!digitalRead(43)) //43. láb
     {
       if (!note[61 + i]) {
-        kiir(NOTENAME[i], "3 ON    ");
+        // kiir(NOTENAME[i], "3 ON    ");
         MIDI3.sendNoteOn(tune + 36 + i, 127, 1);
         note[61 + i] = true;
       }
     } else {
       if (note[61 + i]) {
-        kiir(NOTENAME[i], "3 OFF   ");
+        //  kiir(NOTENAME[i], "3 OFF   ");
         MIDI3.sendNoteOff(tune + 36 + i, 0, 1);
         note[61 + i] = false;
       }
@@ -428,14 +819,14 @@ void keyboardscanner() {
     if (!digitalRead(45)) //45. láb
     {
       if (!note[73 + i]) {
-        kiir(NOTENAME[i], "4 ON    ");
+        //  kiir(NOTENAME[i], "4 ON    ");
 
         MIDI3.sendNoteOn(tune + 48 + i, 127, 1);
         note[73 + i] = true;
       }
     } else {
       if (note[73 + i]) {
-        kiir(NOTENAME[i], "4 OFF   ");
+        //  kiir(NOTENAME[i], "4 OFF   ");
         MIDI3.sendNoteOff(tune + 48 + i, 0, 1);
         note[73 + i] = false;
       }
@@ -445,18 +836,24 @@ void keyboardscanner() {
     {
       if (!note[85 + i]) {
 
-        kiir(NOTENAME[i], "5 ON    ");
+        // kiir(NOTENAME[i], "5 ON    ");
         MIDI3.sendNoteOn(tune + 60 + i, 127, 1);
         note[85 + i] = true;
       }
     } else {
       if (note[85 + i]) {
-        kiir(NOTENAME[i], "5 OFF    ");
+        //    kiir(NOTENAME[i], "5 OFF    ");
         MIDI3.sendNoteOff(tune + 60 + i, 0, 1);
         note[85 + i] = false;
       }
     }
   }
+}
+void kiir0(String szoveg, String szam) {
+  String kiirszoveg = szoveg + szam;
+  Serial.print(kiirszoveg + "\n");
+  lcd.setCursor(0, 0);
+  lcd.print(kiirszoveg);
 }
 
 void kiir(String szoveg, String szam) {
