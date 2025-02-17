@@ -49,7 +49,7 @@ bool ROWS[12];
 int COLS[12] = {28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50};
 int BUTTON1COLS[4] = {3, 4, 5, 6};
 int BUTTON2COLS[7] = {25, 27, 29, 31, 33, 35};
-String NOTENAME[14] = { "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H", "C", "CISZ","D"};
+String NOTENAME[14] = { "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H", "C", "CISZ", "D"};
 uint64_t  PioC;
 long elozoido = 0;
 long mostido = 0;
@@ -59,8 +59,8 @@ String upperlowerstring[4] = {"L1: ", "L2: ", "U1: ", "U2: "};
 //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
 //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
 String menustring[64] = {"NO", "Save Yes/No", "ENV-MODE", "LOWER1", "NO", "NO", "LEVEL", "LOWER2", "NO", "NO", "LOOP-SAMPLE", "UPPER1", "LFO 4-5", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "STEP-CHASE", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
-String Waveform[128] = {"marimba", "vibraphone", "xilophone1", "xilophone2", "logbass", "hammer", "japanesedrum", "kalimba", "pluck1", "chink", "agogo", "triangle", "bells", "pick", "lowpiano", "pianosample", "highpiano", "hapsichord", "harp", "organpercus", "steelstrings", "nylonstrings", "electgitar1", "electgitar2", "dirtygitar", "pickbass", "popbass", "thump", "klarinet", "breath", "popbass", "thump", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "steamer", "violins", "pidzicart", "drawbarsloop", "highorganloop", "loworganloop", "electpiano1loop", "electpiano2loop", "claviloop", "hapsichordloop", "electbassloop1", "acusticbassloop", "electbassloop2", "electbassloop3", "electgitarloop", "chelloloop", "violinloop", "reedloop", "saxloop1", "saxloop2", "aahloop", "oohloop", "maleloop", "spectrum1loop", "pectrum2loop"};
-String Reverbstrings[32] = {"Small Hall", "Medium Hall", "Large Hall", "Chapel", "Box", "SmallMetalRoom", "Small Room", "Medium Room", "Md Large Room", "Large Room", "SingleDelay102ms", "CrossDelay180ms", "CrossDelay224ms", "CrossDelay148-256ms", "ShortGate200ms", "LongGate480ms", "Bright Hall", "Large Cave", "Steel Pan" "Delay248ms", "Delay338ms", "CrossDelay157ms" "CrossDelay252ms","CrossDelay274-137ms","Gate Recerb","Reverse Gate360ms","Reverse Gate480ms","Slap Back", "Slap Back", "Slap Back","Twisted Space","Space"};
+String Waveform[128] = {"marimba", "vibraphone", "xilophone1", "xilophone2", "logbass", "hammer", "japanesedrum", "kalimba", "pluck1", "chink", "agogo", "triangle", "bells", "pick", "lowpiano", "pianosample", "highpiano", "hapsichord", "harp", "organpercus", "steelstrings", "nylonstrings", "electgitar1", "electgitar2", "dirtygitar", "pickbass", "popbass", "thump", "klarinet", "breath", "klarinet", "streamer1", "steamer2", "steamer3", "steamer4", "steamer5", "steamer6", "steamer7", "steamer8", "steamer9", "steamer10", "steamer11", "steamer12", "steamer13", "violins", "pidzicart", "drawbarsloop", "highorganloop", "loworganloop", "electpiano1loop", "electpiano2loop", "claviloop", "hapsichordloop", "electbassloop1", "acusticbassloop", "electbassloop2", "electbassloop3", "electgitarloop", "chelloloop", "violinloop", "reedloop", "saxloop1", "saxloop2", "aahloop", "oohloop", "maleloop", "spectrum1loop", "pectrum2loop", "Loop1", "Loop2", "Loop3", "Loop4", "Loop5" , "Loop6", "Loop7", "Loop8", "Loop9", "Loop10", "Loop11", "Loop12", "Loop13", "Loop14", "Loop15", "Loop16", "Loop17", "Loop18", "Loop19", "Loop20", "Loop21", "Loop22", "Loop23", "Loop24", "Loop25", "Loop26", "Loop27", "Loop28", "Loop29", "Loop30", "Loop31", "Loop32"};
+String Reverbstrings[32] = {"Small Hall", "Medium Hall", "Large Hall", "Chapel", "Box", "SmallMetalRoom", "Small Room", "Medium Room", "Md Large Room", "Large Room", "SingleDelay102ms", "CrossDelay180ms", "CrossDelay224ms", "CrossDelay148-256ms", "ShortGate200ms", "LongGate480ms", "Bright Hall", "Large Cave", "Steel Pan" "Delay248ms", "Delay338ms", "CrossDelay157ms" "CrossDelay252ms", "CrossDelay274-137ms", "Gate Recerb", "Reverse Gate360ms", "Reverse Gate480ms", "Slap Back", "Slap Back", "Slap Back", "Twisted Space", "Space"};
 String Keyfollow[17] = {"-1", "-1/2", "-1/4", "Fixed", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "NORMAL", "5/4", "3/2", "2", "s1", "s2"};
 
 void setup() {
@@ -154,7 +154,7 @@ void setup() {
   lcd.print("                ");
   delay(800);
   lcd.setCursor(0, 0);
-  programload(0);
+  programload(-1);
 }
 
 void loop() {
@@ -173,7 +173,7 @@ void loop() {
 
         values[menupages][upperlower] = 0;
       }
-       
+
     }
     if (button2[8] == true) {
       if (values[menupages][upperlower] > 0)
@@ -251,6 +251,106 @@ void programsave(byte saveprog) {
 
 
 void programload(byte loadprog) {
+  //init pach
+  if  (loadprog == -1)
+  {
+    //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
+    //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
+    //
+    //  L1   |   L2  |   U1  |   U2  |  Wave | Course |  Fine  |  TVAOn  |  Loop qaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|
+    // Load
+    values[2][0] = 1; //Envmode L1
+    values[2][1] = 1; //Envmode L2
+    values[2][2] = 1; //Envmode U1
+    values[2][3] = 1; //Envmode U2
+
+    //index 3 Lover1
+
+
+    values[6][0] = 20; //Level L1
+    values[6][1] = 20; //Level L2
+    values[6][2] = 20; //Level U1
+    values[6][3] = 20; //Level U2
+
+    //index 7 Lower2
+
+
+    values[10][0] = 1; //Loopsample L1
+    values[10][1] = 1; //Loopsample L2
+    values[10][2] = 1; //Loopsample U1
+    values[10][3] = 1; //Loopsample U2
+
+    //index 11 Upper1
+
+    values[12][0] = 22; //LFO4 Freq
+    values[12][1] = 0; //LFO4 Level
+    values[12][2] = 22; //LFO5 Freq
+    values[12][3] = 0; //LFO5 Level
+
+
+
+    //index 15 Upper2
+
+    values[16][0] = 0; //EQ1 LEVEL
+    values[16][1] = 0; //EQ1 F0
+    values[16][2] = 0; //EQ2 LEVEL
+    values[16][3] = 0; //EQ2 F0
+
+    values[19][0] = 69; //Waveform L1
+    values[19][1] = 68; //Waveform L2
+    values[19][2] = 69; //Waveform U1
+    values[19][3] = 68; //Waveform U2
+
+    values[20][0] = 0; //EQ1 Q
+    values[20][1] = 0; //EQ" Q
+    values[20][2] = 0; //CH1 FREQ
+    values[20][3] = 0; //CH2 FREQ
+
+
+    values[23][0] = 48; //Course L1
+    values[23][1] = 48; //Course L2
+    values[23][2] = 48; //Course U1
+    values[23][3] = 48; //Course U2
+
+    values[24][0] = 16; //Step
+    values[24][1] = 0; //Chase Mode
+    values[24][2] = 0; //Chase Level
+    values[24][3] = 0; //Chase Number
+
+    values[27][0] = 50; //FINE L1
+    values[27][1] = 50; //FINE L2
+    values[27][2] = 50; //FINE U1
+    values[27][3] = 50; //FINE U2
+
+    values[28][0] = 0; //Reverb alg
+    values[28][1] = 0; //Reverb Level
+    values[28][2] = 0; //CH1 Level
+    values[28][3] = 0; //Ch2 Level
+
+    values[31][0] = 11; //Keyfollow L1
+    values[31][1] = 11; //Keyfollow L2
+    values[31][2] = 11; //Keyfollow U1
+    values[31][3] = 11; //Keyfollow U2
+
+
+    //send init value te tevices all menus
+    for (int i = 0; i < 64; i++)
+    {
+      for (int j = 0; j < 4; j++)
+      {
+        menupages = i;
+        upperlower = j;
+        if (menupages != 1) {
+          midisendsysex();
+        }
+      }
+
+
+    }
+
+  }else{
+
+
   int kezdocim = loadprog * 256;
   for (int i = 0; i < 64; i++)
   {
@@ -267,6 +367,7 @@ void programload(byte loadprog) {
   kiir("        ", "        ");
   kiir("LOAD: ", String(loadprog));
   delay(200);
+  }
 }
 void  midisendsysex() {
   //--------------MENU--------------------------
@@ -324,19 +425,19 @@ void  midisendsysex() {
   {
     if (upperlower == 0) {
       midisysexsend(1, 64, sendvalue);
-    
+
     }
     if (upperlower == 1) {
-        midisysexsend(2, 0, sendvalue);
-      
+      midisysexsend(2, 0, sendvalue);
+
     }
     if (upperlower == 2) {
-        midisysexsend(0, 0, sendvalue);
-     
+      midisysexsend(0, 0, sendvalue);
+
     }
     if (upperlower == 3) {
-        midisysexsend(0, 64, sendvalue);
-      
+      midisysexsend(0, 64, sendvalue);
+
     }
     String note = NOTENAME[values[menupages][upperlower] % 12];
     String octave = String(values[menupages][upperlower] / 12);
@@ -347,78 +448,78 @@ void  midisendsysex() {
   if (menupages == 20)
   {
     if (upperlower == 0) {
-        midisysexsend(2, 87, sendvalue);
-      
+      midisysexsend(2, 87, sendvalue);
+
       lrowstring[menupages][upperlower] = "EQ1 Q=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 1) {
-        midisysexsend(1, 23, sendvalue);
-      
+      midisysexsend(1, 23, sendvalue);
+
       lrowstring[menupages][upperlower] = "EQ2 Q=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-        midisysexsend(2, 107, sendvalue);
-     
+      midisysexsend(2, 107, sendvalue);
+
       lrowstring[menupages][upperlower] = "CH1 FREQ=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-        midisysexsend(1, 43, sendvalue);
-     
+      midisysexsend(1, 43, sendvalue);
+
       lrowstring[menupages][upperlower] = "CH2 FREQ=" + String(values[menupages][upperlower]);
     }
   }
 
-//LFO 4-5
-if (menupages == 12)
+  //LFO 4-5
+  if (menupages == 12)
   {
     if (upperlower == 0) {
-        midisysexsend(2, 94, sendvalue);
-      
+      midisysexsend(2, 94, sendvalue);
+
       lrowstring[menupages][upperlower] = "LFO4 Freq=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 1) {
-        midisysexsend(2, 95, sendvalue);
-   
+      midisysexsend(2, 95, sendvalue);
+
       lrowstring[menupages][upperlower] = "LFO4 Level=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-        midisysexsend(2, 98, sendvalue);
-     
+      midisysexsend(2, 98, sendvalue);
+
       lrowstring[menupages][upperlower] = "LFO5 Freq==" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-        midisysexsend(2, 99, sendvalue);
-    
+      midisysexsend(2, 99, sendvalue);
+
       lrowstring[menupages][upperlower] = "LFO5 Level=" + String(values[menupages][upperlower]);
     }
   }
 
 
 
-//step
-if (menupages == 24)
+  //step
+  if (menupages == 24)
   {
     if (upperlower == 0) {
-      if (sendvalue>15 && sendvalue<25)
-        {midisysexsend(3, 27, sendvalue);
-        
-        }
-     
+      if (sendvalue > 15 && sendvalue < 25)
+      { midisysexsend(3, 27, sendvalue);
+
+      }
+
       lrowstring[menupages][upperlower] = "Step=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 1) {
-        midisysexsend(3, 34, sendvalue);
-      
+      midisysexsend(3, 34, sendvalue);
+
       lrowstring[menupages][upperlower] = "Chase Mode=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
-        midisysexsend(3, 35, sendvalue);
-      
+      midisysexsend(3, 35, sendvalue);
+
       lrowstring[menupages][upperlower] = "Case Level==" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
-        midisysexsend(3, 36, sendvalue);
-     
+      midisysexsend(3, 36, sendvalue);
+
       lrowstring[menupages][upperlower] = "Case Number=" + String(values[menupages][upperlower]);
     }
   }
@@ -426,20 +527,20 @@ if (menupages == 24)
   if (menupages == 27)
   {
     if (upperlower == 0) {
-        midisysexsend(1, 65, sendvalue);
-      
+      midisysexsend(1, 65, sendvalue);
+
     }
     if (upperlower == 1) {
-        midisysexsend(2, 1, sendvalue);
-     
+      midisysexsend(2, 1, sendvalue);
+
     }
     if (upperlower == 2) {
-        midisysexsend(0, 11, sendvalue);
-     
+      midisysexsend(0, 11, sendvalue);
+
     }
     if (upperlower == 3) {
-        midisysexsend(0, 65, sendvalue);
-    
+      midisysexsend(0, 65, sendvalue);
+
     }
     lrowstring[menupages][upperlower] = String(values[menupages][upperlower]);
   }
@@ -451,95 +552,95 @@ if (menupages == 24)
       values[menupages][upperlower] = 0;
     }
     if (upperlower == 0) {
-        midisysexsend(1, 66, sendvalue);
-     
+      midisysexsend(1, 66, sendvalue);
+
     }
     if (upperlower == 1) {
-        midisysexsend(2, 2, sendvalue);
-     
+      midisysexsend(2, 2, sendvalue);
+
     }
     if (upperlower == 2) {
-        midisysexsend(0, 2, sendvalue);
-     
+      midisysexsend(0, 2, sendvalue);
+
     }
     if (upperlower == 3) {
-      
-        midisysexsend(0, 66, sendvalue);
-     
+
+      midisysexsend(0, 66, sendvalue);
+
     }
     lrowstring[menupages][upperlower] = Keyfollow[values[menupages][upperlower]];
   }
 
-//envmode
+  //envmode
   if (menupages == 2)
   {
     if (upperlower == 0) {
-        midisysexsend(1, 67, sendvalue);  
+      midisysexsend(1, 67, sendvalue);
     }
     if (upperlower == 1) {
-        midisysexsend(2, 4, sendvalue);
-      
+      midisysexsend(2, 4, sendvalue);
+
     }
     if (upperlower == 2) {
-        midisysexsend(0, 4, sendvalue);
-      
+      midisysexsend(0, 4, sendvalue);
+
     }
     if (upperlower == 3) {
-        midisysexsend(0, 68, sendvalue);
-      
+      midisysexsend(0, 68, sendvalue);
+
     }
     String note = NOTENAME[values[menupages][upperlower] % 12];
-    
-   lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
+
+    lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
   }
 
-//level
+  //level
   if (menupages == 6)
   {
     if (upperlower == 0) {
-        midisysexsend(1, 99, sendvalue);
-    
+      midisysexsend(1, 99, sendvalue);
+
     }
     if (upperlower == 1) {
-        midisysexsend(2, 35, sendvalue);
-      
-     
+      midisysexsend(2, 35, sendvalue);
+
+
     }
     if (upperlower == 2) {
-        midisysexsend(0, 35, sendvalue);
-    
+      midisysexsend(0, 35, sendvalue);
+
     }
     if (upperlower == 3) {
-        midisysexsend(0, 99, sendvalue);
-      
+      midisysexsend(0, 99, sendvalue);
+
     }
     String note = NOTENAME[values[menupages][upperlower] % 12];
-    
-   lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
+
+    lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
   }
 
-//loopsample
+  //loopsample
   if (menupages == 10)
   {
     if (upperlower == 0) {
-        midisysexsend(1, 113, sendvalue);
-      
+      midisysexsend(1, 113, sendvalue);
+
     }
     if (upperlower == 1) {
-        midisysexsend(2, 49, sendvalue);
-     
+      midisysexsend(2, 49, sendvalue);
+
     }
     if (upperlower == 2) {
-  midisysexsend(0, 49, sendvalue);
-      
+      midisysexsend(0, 49, sendvalue);
+
     }
     if (upperlower == 3) {
-        midisysexsend(0, 113, sendvalue);
-      
+      midisysexsend(0, 113, sendvalue);
+
     }
     String note = NOTENAME[values[menupages][upperlower] % 12];
-    
-   lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
+
+    lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
   }
 
   if (menupages == 28)
@@ -549,26 +650,26 @@ if (menupages == 24)
         values[menupages][upperlower] = 0;
       }
       //reverb alg
-        midisysexsend(3, 30, sendvalue);
-    
+      midisysexsend(3, 30, sendvalue);
+
       lrowstring[menupages][upperlower] = Reverbstrings[values[menupages][upperlower]];
     }
     if (upperlower == 1) {
       //reverb level
-        midisysexsend(3, 31, sendvalue);
-      
+      midisysexsend(3, 31, sendvalue);
+
       lrowstring[menupages][upperlower] = "REV LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 2) {
       //chorusLevelLeft
-        midisysexsend(2, 108, sendvalue);
-      
+      midisysexsend(2, 108, sendvalue);
+
       lrowstring[menupages][upperlower] = "CH1 LEVEL=" + String(values[menupages][upperlower]);
     }
     if (upperlower == 3) {
       //chorusLevelRight
-        midisysexsend(1, 44, sendvalue);
-     
+      midisysexsend(1, 44, sendvalue);
+
       lrowstring[menupages][upperlower] = "CH2 LEVEL=" + String(values[menupages][upperlower]);
     }
   }
@@ -619,7 +720,7 @@ void button2scanner() {
       }
     } else {
       if (button2[i + 6]) {
-         // kiir("BUTTO2__OFF:", String(i + 6));
+        // kiir("BUTTO2__OFF:", String(i + 6));
         button2[i + 6] = false;
       }
 
