@@ -187,7 +187,7 @@ void loop() {
     if (menu == 15) {
       upperlower = submenu * 4 + 3;
     }
-
+//Serial.println("upperlower: "+String(upperlower));
 
 
     if (button2[9] == true) {
@@ -226,22 +226,17 @@ void loop() {
 
     if (menu != 3 && menu != 7 && menu != 11 && menu != 15)
     {
-      menupages = menu;
-      kiir0("        ", "        ");
+      menupages = menu;      
+    } 
+    kiir0("        ", "        ");
       kiir0(upperlowerstring[upperlower], menustring[menupages]);
       lastmenu = menu;
-    } else
-    {
-    
-      kiir0("        ", "        ");
-      kiir0(upperlowerstring[upperlower], menustring[menupages]);
-      lastmenu = menu;
-    }
   }
 
-  if (lrowstring[menupages][upperlower + submenu] != lastlrowstring) {
+  if (lrowstring[menupages][upperlower] != lastlrowstring) {
     kiir("        ", "        ");
-    kiir("", lrowstring[menupages][upperlower + submenu]);
+    kiir("", lrowstring[menupages][upperlower
+    ]);
     lastlrowstring = lrowstring[menupages][upperlower];
 
   }
@@ -391,12 +386,15 @@ void programload(byte loadprog) {
 
 void  midisysexswitch() {
   //--------------MENU--------------------------
+  byte sendvalue = values[menupages][upperlower];
+  
+  
   if (menupages == 1)
   {
     programsave(0);
   }
-  byte sendvalue = values[menupages][upperlower];
-  byte paritbit = 0;
+  
+  //byte paritbit = 0;
   //eq
   if (menupages == 16)
   {
@@ -489,8 +487,7 @@ void  midisysexswitch() {
     }
   }
 
-  //LFO 4-5
-  if (menupages == 12)
+if (menupages == 8)
   {
     if (upperlower == 0) {
       midisysexsend(2, 94, sendvalue);
@@ -511,6 +508,50 @@ void  midisysexswitch() {
       midisysexsend(2, 99, sendvalue);
 
       lrowstring[menupages][upperlower] = "LFO5 Level=" + String(sendvalue);
+    }
+  }
+  //LFO 4-5
+  if (menupages == 12)
+  {   
+     if (upperlower == 0) {
+      midisysexsend(2, 90, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO2 Freq=" + String(sendvalue);
+    }
+    if (upperlower == 1) {
+      midisysexsend(2, 91, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO2 Level=" + String(sendvalue);
+    }
+    if (upperlower == 2) {
+      midisysexsend(2, 92, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO2 Sync==" + String(sendvalue);
+    }
+    if (upperlower == 3) {
+     // midisysexsend(2, 99, sendvalue);
+
+      lrowstring[menupages][upperlower] = "None=" + String(sendvalue);
+    }
+    if (upperlower == 4) {
+      midisysexsend(2, 26, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO3 Freq=" + String(sendvalue);
+    }
+     if (upperlower == 5) {
+      midisysexsend(2, 27, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO3 Level=" + String(sendvalue);
+    }
+    if (upperlower == 6) {
+      midisysexsend(2, 28, sendvalue);
+
+      lrowstring[menupages][upperlower] = "LFO3 Sync==" + String(sendvalue);
+    }
+    if (upperlower == 7) {
+     // midisysexsend(2, 28, sendvalue);
+
+      lrowstring[menupages][upperlower] = "None=" + String(sendvalue);
     }
   }
 
