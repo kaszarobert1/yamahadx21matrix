@@ -172,23 +172,7 @@ void loop() {
     }
     // Serial.println("Submenu: " + String(submenu));
 
-    if (menu == 3) {
-      upperlower = submenu * 4 + 0;
-    }
-
-    if (menu == 7) {
-      upperlower = submenu * 4 + 1;
-    }
-
-    if (menu == 11 ) {
-      upperlower = submenu * 4 + 2;
-    }
-
-    if (menu == 15) {
-      upperlower = submenu * 4 + 3;
-    }
-//Serial.println("upperlower: "+String(upperlower));
-
+    
 
     if (button2[9] == true) {
       if (values[menupages][upperlower] < 100)
@@ -212,6 +196,24 @@ void loop() {
       }
     }
   }
+
+  if (menu == 3) {
+      upperlower = submenu * 4 + 0;
+    }
+
+    if (menu == 7) {
+      upperlower = submenu * 4 + 1;
+    }
+
+    if (menu == 11 ) {
+      upperlower = submenu * 4 + 2;
+    }
+
+    if (menu == 15) {
+      upperlower = submenu * 4 + 3;
+    }
+//Serial.println("upperlower: "+String(upperlower));
+
   if (values[menupages][upperlower] != oldvalues[menupages][upperlower]) {
     midisysexswitch();
     oldvalues[menupages][upperlower] = values[menupages][upperlower];
