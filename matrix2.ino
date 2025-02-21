@@ -56,7 +56,7 @@ String upperlowerstring[4] = {"L1: ", "L2: ", "U1: ", "U2: "};
 bool change = false;
 //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
 //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
-String menustring[64] = {"NO", "Save Yes/No", "ENV-MODE", "LOWER1", "NO", "NO", "LEVEL", "LOWER2", "NO", "NO", "LOOP-SAMPLE", "UPPER1", "LFO 4-5", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "STEP-CHASE", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
+String menustring[64] = {"NO", "Save Yes/No", "ENV-MODE", "LOWER1", "NO", "LOAD YES/NO", "LEVEL", "LOWER2", "NO", "NO", "LOOP-SAMPLE", "UPPER1", "LFO 4-5", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "STEP-CHASE", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
 String Waveform[128] = {"marimba", "vibraphone", "xilophone1", "xilophone2", "logbass", "hammer", "japanesedrum", "kalimba", "pluck1", "chink", "agogo", "triangle", "bells", "pick", "lowpiano", "pianosample", "highpiano", "hapsichord", "harp", "organpercus", "steelstrings", "nylonstrings", "electgitar1", "electgitar2", "dirtygitar", "pickbass", "popbass", "thump", "klarinet", "breath", "klarinet", "streamer1", "steamer2", "steamer3", "steamer4", "steamer5", "steamer6", "steamer7", "steamer8", "steamer9", "steamer10", "steamer11", "steamer12", "steamer13", "violins", "pidzicart", "drawbarsloop", "highorganloop", "loworganloop", "electpiano1loop", "electpiano2loop", "claviloop", "hapsichordloop", "electbassloop1", "acusticbassloop", "electbassloop2", "electbassloop3", "electgitarloop", "chelloloop", "violinloop", "reedloop", "saxloop1", "saxloop2", "aahloop", "oohloop", "maleloop", "spectrum1loop", "pectrum2loop", "Loop1", "Loop2", "Loop3", "Loop4", "Loop5" , "Loop6", "Loop7", "Loop8", "Loop9", "Loop10", "Loop11", "Loop12", "Loop13", "Loop14", "Loop15", "Loop16", "Loop17", "Loop18", "Loop19", "Loop20", "Loop21", "Loop22", "Loop23", "Loop24", "Loop25", "Loop26", "Loop27", "Loop28", "Loop29", "Loop30", "Loop31", "Loop32"};
 String Reverbstrings[32] = {"Small Hall", "Medium Hall", "Large Hall", "Chapel", "Box", "SmallMetalRoom", "Small Room", "Medium Room", "Md Large Room", "Large Room", "SingleDelay102ms", "CrossDelay180ms", "CrossDelay224ms", "CrossDelay148-256ms", "ShortGate200ms", "LongGate480ms", "Bright Hall", "Large Cave", "Steel Pan" "Delay248ms", "Delay338ms", "CrossDelay157ms" "CrossDelay252ms", "CrossDelay274-137ms", "Gate Recerb", "Reverse Gate360ms", "Reverse Gate480ms", "Slap Back", "Slap Back", "Slap Back", "Twisted Space", "Space"};
 String Keyfollow[17] = {"-1", "-1/2", "-1/4", "Fixed", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "NORMAL", "5/4", "3/2", "2", "s1", "s2"};
@@ -153,6 +153,7 @@ void setup() {
   delay(800);
   lcd.setCursor(0, 0);
   programload(255);
+  menu = 19;
 }
 
 void loop() {
@@ -162,6 +163,10 @@ void loop() {
   long mostido = millis();
   if (mostido - elozoido > 100) {
     elozoido = mostido;
+    //edit button
+
+
+    //submenu gomb
     if (button2[4] == true) {
       if (submenu < 1)
       {
@@ -172,8 +177,8 @@ void loop() {
     }
     // Serial.println("Submenu: " + String(submenu));
 
-    
 
+    //value increment
     if (button2[9] == true) {
       if (values[menupages][upperlower] < 100)
       {
@@ -185,6 +190,7 @@ void loop() {
       }
 
     }
+    //value  decrement
     if (button2[8] == true) {
       if (values[menupages][upperlower] > 0)
       {
@@ -197,23 +203,27 @@ void loop() {
     }
   }
 
+
+
+  //L1 L2 U1 U2 Button
   if (menu == 3) {
-      upperlower = submenu * 4 + 0;
-    }
+    upperlower = submenu * 4 + 0;
+  }
 
-    if (menu == 7) {
-      upperlower = submenu * 4 + 1;
-    }
+  if (menu == 7) {
+    upperlower = submenu * 4 + 1;
+  }
 
-    if (menu == 11 ) {
-      upperlower = submenu * 4 + 2;
-    }
+  if (menu == 11 ) {
+    upperlower = submenu * 4 + 2;
+  }
 
-    if (menu == 15) {
-      upperlower = submenu * 4 + 3;
-    }
-//Serial.println("upperlower: "+String(upperlower));
+  if (menu == 15) {
+    upperlower = submenu * 4 + 3;
+  }
+  //Serial.println("upperlower: "+String(upperlower));
 
+  //value refreesh array
   if (values[menupages][upperlower] != oldvalues[menupages][upperlower]) {
     midisysexswitch();
     oldvalues[menupages][upperlower] = values[menupages][upperlower];
@@ -224,21 +234,22 @@ void loop() {
 
 
   //------------------------!!!!!
+  //menu changed
   if (menu != lastmenu) {
 
     if (menu != 3 && menu != 7 && menu != 11 && menu != 15)
     {
-      menupages = menu;      
-    } 
+      menupages = menu;
+    }
     kiir0("        ", "        ");
-      kiir0(upperlowerstring[upperlower], menustring[menupages]);
-      lastmenu = menu;
+    kiir0(upperlowerstring[upperlower], menustring[menupages]);
+    lastmenu = menu;
   }
 
   if (lrowstring[menupages][upperlower] != lastlrowstring) {
     kiir("        ", "        ");
     kiir("", lrowstring[menupages][upperlower
-    ]);
+                                  ]);
     lastlrowstring = lrowstring[menupages][upperlower];
 
   }
@@ -249,6 +260,7 @@ void loop() {
 void programsave(byte saveprog) {
   //saveprog
   int kezdocim = saveprog * 256;
+  Serial.println("Save Adress: " + String(kezdocim));
   for (int i = 0; i < 32; i++)
   {
     for (int j = 0; j < 8; j++)
@@ -259,7 +271,7 @@ void programsave(byte saveprog) {
     }
   }
   kiir("        ", "        ");
-  kiir("SAVE: ", String(saveprog));
+  kiir("SAVE READY: ", String(saveprog));
   delay(500);
 }
 
@@ -271,7 +283,10 @@ void programload(byte loadprog) {
     //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
     //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
     //
-    //  L1   |   L2  |   U1  |   U2  |  Wave | Course |  Fine  |  TVAOn  |  Loop |
+    //  L1  (3)|   L2 (7)|  U1 (11)|  U2  (15)| Wave (19)| Course (23)| Fine (27)| KeyFollow (31)| ENV MODE (2)| Level (6)| Loop (10)| Loop (14)| Loop (18)| Loop (22)| Loop (26)| Loop (30)|
+    
+    // SAVE (1)| LOAD (5)|  U1 (9) |  U2  (13)| Wave (17)| Course (21)| Fine (25)| KeyFollow (29)| ENV MODE (0)| Level (4)| Loop  (8)| Loop (12)| Loop (16)| Loop (20)| Loop (24)| Loop (28)|
+    
     // Load
     values[2][0] = 1; //Envmode L1
     values[2][1] = 1; //Envmode L2
@@ -354,10 +369,10 @@ void programload(byte loadprog) {
       {
         menupages = i;
         upperlower = j;
-        if (menupages != 1) {
+        if (menupages != 1 || menupages != 5 ) {
           Serial.println(String(i * j + j) + ": " + String(values[menupages][upperlower]));
           midisysexswitch();
-          delay(20);
+          delay(10);
         }
       }
       Serial.println("progsendend:");
@@ -368,6 +383,7 @@ void programload(byte loadprog) {
 
 
     int kezdocim = loadprog * 256;
+    Serial.println("LOAD Adress: " + String(kezdocim));
     for (int i = 0; i < 32; i++)
     {
       for (int j = 0; j < 8; j++)
@@ -377,25 +393,39 @@ void programload(byte loadprog) {
         if (menupages != 1) {
           values[i][j] = dueFlashStorage.read(kezdocim + j * 32 + i);
           midisysexswitch();
+          delay(20);
         }
       }
     }
     kiir("        ", "        ");
     kiir("LOAD: ", String(loadprog));
-    delay(200);
+    delay(500);
+    Serial.println("LOAD READY: " + String(loadprog));
   }
 }
 
 void  midisysexswitch() {
   //--------------MENU--------------------------
   byte sendvalue = values[menupages][upperlower];
-  
-  
+
+
   if (menupages == 1)
   {
-    programsave(0);
+    if (sendvalue == 3) {
+      programsave(0);
+    }
+    lrowstring[menupages][upperlower] = "SACE VALUE 3!=" + String(sendvalue);
   }
-  
+
+
+
+  if (menupages == 5)
+  {
+    if (sendvalue == 3) {
+      programload(0);
+    }
+    lrowstring[menupages][upperlower] = "LOAD VALUE 3!=" + String(sendvalue);
+  }
   //byte paritbit = 0;
   //eq
   if (menupages == 16)
@@ -489,7 +519,7 @@ void  midisysexswitch() {
     }
   }
 
-if (menupages == 8)
+  if (menupages == 8)
   {
     if (upperlower == 0) {
       midisysexsend(2, 94, sendvalue);
@@ -514,8 +544,8 @@ if (menupages == 8)
   }
   //LFO 4-5
   if (menupages == 12)
-  {   
-     if (upperlower == 0) {
+  {
+    if (upperlower == 0) {
       midisysexsend(2, 90, sendvalue);
 
       lrowstring[menupages][upperlower] = "LFO2 Freq=" + String(sendvalue);
@@ -531,7 +561,7 @@ if (menupages == 8)
       lrowstring[menupages][upperlower] = "LFO2 Sync==" + String(sendvalue);
     }
     if (upperlower == 3) {
-     // midisysexsend(2, 99, sendvalue);
+      // midisysexsend(2, 99, sendvalue);
 
       lrowstring[menupages][upperlower] = "None=" + String(sendvalue);
     }
@@ -540,7 +570,7 @@ if (menupages == 8)
 
       lrowstring[menupages][upperlower] = "LFO3 Freq=" + String(sendvalue);
     }
-     if (upperlower == 5) {
+    if (upperlower == 5) {
       midisysexsend(2, 27, sendvalue);
 
       lrowstring[menupages][upperlower] = "LFO3 Level=" + String(sendvalue);
@@ -551,7 +581,7 @@ if (menupages == 8)
       lrowstring[menupages][upperlower] = "LFO3 Sync==" + String(sendvalue);
     }
     if (upperlower == 7) {
-     // midisysexsend(2, 28, sendvalue);
+      // midisysexsend(2, 28, sendvalue);
 
       lrowstring[menupages][upperlower] = "None=" + String(sendvalue);
     }
