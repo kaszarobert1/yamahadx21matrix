@@ -47,7 +47,7 @@ bool ROWS[12];
 int COLS[12] = {28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50};
 int BUTTON1COLS[4] = {3, 4, 5, 6};
 int BUTTON2COLS[7] = {25, 27, 29, 31, 33, 35};
-String NOTENAME[14] = { "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H", "C", "CISZ", "D"};
+String NOTENAME[14] = {"C", "CISZ", "D", "DISZ", "E", "F", "FISZ", "G", "GISZ", "A", "B", "H"};
 uint64_t  PioC;
 long elozoido = 0;
 long mostido = 0;
@@ -56,7 +56,7 @@ String upperlowerstring[4] = {"L1: ", "L2: ", "U1: ", "U2: "};
 bool change = false;
 //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
 //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
-String menustring[64] = {"NO", "Save Yes/No", "ENV-MODE", "LOWER1", "NO", "LOAD YES/NO", "LEVEL", "LOWER2", "NO", "NO", "LOOP-SAMPLE", "UPPER1", "LFO 4-5", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "STEP-CHASE", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
+String menustring[64] = {"NO", "Save Yes/No", "ENV-MODE", "LOWER1", "NO", "LOAD YES/NO", "LEVEL", "LOWER2", "NO", "ENV T1/ENV_T2", "LOOP-SAMPLE", "UPPER1", "LFO 4-5", "NO", "NO", "UPPER2", "EQ BIAS", "NO", "NO", "WAVEFORM", "EQ-Q CH-FREQ", "NO", "NO", "COARSE", "STEP-CHASE", "NO", "NO", "FINE", "EFFECT 2", "NO", "NO", "KEY FOLLOW", "NO", "NO", "NO", "LFO MODE", "NO", "NO", "NO", "ENV MODE", "NO", "NO", "NO", "BEND MODE", ""};
 String Waveform[128] = {"marimba", "vibraphone", "xilophone1", "xilophone2", "logbass", "hammer", "japanesedrum", "kalimba", "pluck1", "chink", "agogo", "triangle", "bells", "pick", "lowpiano", "pianosample", "highpiano", "hapsichord", "harp", "organpercus", "steelstrings", "nylonstrings", "electgitar1", "electgitar2", "dirtygitar", "pickbass", "popbass", "thump", "klarinet", "breath", "klarinet", "streamer1", "steamer2", "steamer3", "steamer4", "steamer5", "steamer6", "steamer7", "steamer8", "steamer9", "steamer10", "steamer11", "steamer12", "steamer13", "violins", "pidzicart", "drawbarsloop", "highorganloop", "loworganloop", "electpiano1loop", "electpiano2loop", "claviloop", "hapsichordloop", "electbassloop1", "acusticbassloop", "electbassloop2", "electbassloop3", "electgitarloop", "chelloloop", "violinloop", "reedloop", "saxloop1", "saxloop2", "aahloop", "oohloop", "maleloop", "spectrum1loop", "pectrum2loop", "Loop1", "Loop2", "Loop3", "Loop4", "Loop5" , "Loop6", "Loop7", "Loop8", "Loop9", "Loop10", "Loop11", "Loop12", "Loop13", "Loop14", "Loop15", "Loop16", "Loop17", "Loop18", "Loop19", "Loop20", "Loop21", "Loop22", "Loop23", "Loop24", "Loop25", "Loop26", "Loop27", "Loop28", "Loop29", "Loop30", "Loop31", "Loop32"};
 String Reverbstrings[32] = {"Small Hall", "Medium Hall", "Large Hall", "Chapel", "Box", "SmallMetalRoom", "Small Room", "Medium Room", "Md Large Room", "Large Room", "SingleDelay102ms", "CrossDelay180ms", "CrossDelay224ms", "CrossDelay148-256ms", "ShortGate200ms", "LongGate480ms", "Bright Hall", "Large Cave", "Steel Pan" "Delay248ms", "Delay338ms", "CrossDelay157ms" "CrossDelay252ms", "CrossDelay274-137ms", "Gate Recerb", "Reverse Gate360ms", "Reverse Gate480ms", "Slap Back", "Slap Back", "Slap Back", "Twisted Space", "Space"};
 String Keyfollow[17] = {"-1", "-1/2", "-1/4", "Fixed", "1/8", "1/4", "3/8", "1/2", "5/8", "3/4", "7/8", "NORMAL", "5/4", "3/2", "2", "s1", "s2"};
@@ -282,11 +282,11 @@ void programload(byte loadprog) {
   {
     //menunumber: 3 7 11 15 19 23 27 31 2 6 10 14 18 22 26 30
     //            1 5 9  13 17 21 25 29 0 4 8  12 16 20 24 28
-    //
-    //  L1  (3)|   L2 (7)|  U1 (11)|  U2  (15)| Wave (19)| Course (23)| Fine (27)| KeyFollow (31)| ENV MODE (2)| Level (6)| Loop (10)| Loop (14)| Loop (18)| Loop (22)| Loop (26)| Loop (30)|
-    
-    // SAVE (1)| LOAD (5)|  U1 (9) |  U2  (13)| Wave (17)| Course (21)| Fine (25)| KeyFollow (29)| ENV MODE (0)| Level (4)| Loop  (8)| Loop (12)| Loop (16)| Loop (20)| Loop (24)| Loop (28)|
-    
+    //sub=1:  L1  (3)|   L2 (7)|  U1 (11)|  U2  (15)| Wave (19)| Course (23)| Fine (27)| KeyFollow (31)| ENV MODE (2)| Level (6)| Loop (10)| Loop (14)| Loop (18)| Loop (22)| Loop (26)| Loop (30)|
+    //sub=0:  L1  (3)|   L2 (7)|  U1 (11)|  U2  (15)| Wave (19)| Course (23)| Fine (27)| KeyFollow (31)| ENV MODE (2)| Level (6)| Loop (10)| Loop (14)| Loop (18)| Loop (22)| Loop (26)| Loop (30)|
+    //sub=1: SAVE (1)| LOAD (5)|  U1 (9) |  U2  (13)| Wave (17)| Course (21)| Fine (25)| KeyFollow (29)| ENV MODE (0)| Level (4)| Loop  (8)| Loop (12)| Loop (16)| Loop (20)| Loop (24)| Loop (28)|
+    //sub=0: SAVE (1)| LOAD (5)|  U1 (9) |  U2  (13)| Wave (17)| Course (21)| Fine (25)| KeyFollow (29)| ENV MODE (0)| Level (4)| Loop  (8)| Loop (12)| Loop (16)| Loop (20)| Loop (24)| Loop (28)|
+
     // Load
     values[2][0] = 1; //Envmode L1
     values[2][1] = 1; //Envmode L2
@@ -542,7 +542,7 @@ void  midisysexswitch() {
       lrowstring[menupages][upperlower] = "LFO5 Level=" + String(sendvalue);
     }
   }
-  //LFO 4-5
+  //LFO 2-3
   if (menupages == 12)
   {
     if (upperlower == 0) {
@@ -736,6 +736,63 @@ void  midisysexswitch() {
     lrowstring[menupages][upperlower] =  String(values[menupages][upperlower]);
   }
 
+
+  //ENV_T1 ENV_T2
+  if (menupages == 9)
+  {
+    if (upperlower == 0) {
+
+      //ENV_T1
+      midisysexsend(1, 103, sendvalue);
+
+      lrowstring[menupages][upperlower] = "L1 ENV_T1=" + String(sendvalue);
+    }
+
+    if (upperlower == 1) {
+      //ENV_T1
+      midisysexsend(2, 39, sendvalue);
+
+      lrowstring[menupages][upperlower] = "L2 ENV_T1=" + String(sendvalue);
+    }
+    if (upperlower == 2) {
+      //ENV_T1
+      midisysexsend(0, 39, sendvalue);
+
+      lrowstring[menupages][upperlower] = "U1 ENV_T1=" + String(sendvalue);
+    }
+    if (upperlower == 3 ) {
+      //ENV_T1
+      midisysexsend(0, 103, sendvalue);
+
+      lrowstring[menupages][upperlower] = "U2 ENV_T1=" + String(sendvalue);
+    }
+    if (upperlower == 4) {
+      midisysexsend(1, 104, sendvalue);
+
+      lrowstring[menupages][upperlower] = "L1 ENV_T2=" + String(sendvalue);
+    }
+    if (upperlower == 5) {
+      midisysexsend(2, 40, sendvalue);
+
+      lrowstring[menupages][upperlower] = "L2 ENV_T2=" + String(sendvalue);
+    }
+
+
+    if (upperlower == 6) {
+      midisysexsend(0, 40, sendvalue);
+
+      lrowstring[menupages][upperlower] = "U1 ENV_T2=" + String(sendvalue);
+    }
+    if (upperlower == 7) {
+      midisysexsend(0, 104, sendvalue);
+
+      lrowstring[menupages][upperlower] = "U2 ENV_T2=" + String(sendvalue);
+    }
+
+  }
+
+
+  //rev
   if (menupages == 28)
   {
     if (upperlower == 0) {
